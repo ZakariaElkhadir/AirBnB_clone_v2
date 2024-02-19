@@ -37,20 +37,38 @@ class HBNBCommand(cmd.Cmd):
         """do nothing when empty line"""
         pass
 
-    def do_create(self, type_model):
-        """ Creates an instance according to a given class """
+    def do_create(self, arg):
+        """ Creates an instance according to a given class and parameters """
+        args = arg.split()
+        if not args:
+            print("** class name missing **")
+            return
+        type_model = args.pop(0)
         if not type_model:
             print("** class name missing **")
+            return
         elif type_model not in HBNBCommand.cal:
             print("** class doesn't exist **")
-        else:
-            dct = {'BaseModel': BaseModel, 'User': User, 'Place': Place,
-                   'City': City, 'Amenity': Amenity, 'State': State,
-                   'Review': Review}
-
-            my_model = dct[type_model]()
-            print(my_model.id)
-            my_model.save()
+            return
+        dct = {
+                'BaseModel': BaseModel, 'User': User, 'Place': Place,
+                'City': City, 'Amenity': Amenity, 'State': State,
+                'Review': Review
+                }
+        my_model = dct[type_model]()
+        for param in args:
+            key, value = param.split('=')
+            key = key.replace('_', ' ')
+            if isinstance(value, str):
+                value = value.strip('"')
+                value = value.replace('\\"', '"')
+            elif '.' in value:
+                value = float(value)
+            else:
+                value = int(value)
+            setattr(my_model, key, value)
+        print(my_model.id)
+        my_model.save()
 
     def do_show(self, type_):
         """ Shows string representation of an instance passed """
