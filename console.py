@@ -3,6 +3,7 @@
 import cmd
 import shlex
 import ast
+from models.engine.file_storage import FileStorage
 from models import storage
 from models.base_model import BaseModel
 from models.user import User
@@ -41,12 +42,15 @@ class HBNBCommand(cmd.Cmd):
         """Do nothing for an empty line"""
         pass
 
-    def do_create(self, arg):
-        """Create a new instance of BaseModel"""
-        args = arg.split()
-        if not args:
-            print("** class name missing **")
-            return
+    def all(self, cls=None):
+        """Returns a dictionary of models currently in storage"""
+        if cls is not None:
+            objs = {}
+            for key, value in FileStorage.__objects.items():
+                if eval(key.split('.')[0]) == cls:
+                    objs[key] = value
+            return objs
+        return FileStorage.__objects
 
         class_name = args[0]
         if class_name not in self.classes:

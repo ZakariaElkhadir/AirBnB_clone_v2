@@ -2,8 +2,11 @@
 """ Class BaseModel defines common attributes/methods for other classes """
 
 import uuid
+from models.engine.file_storage import FileStorage
 from datetime import datetime
-import models
+from sqlalchemy import Column, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from models.base_model import BaseModel
 
 
 class BaseModel:
