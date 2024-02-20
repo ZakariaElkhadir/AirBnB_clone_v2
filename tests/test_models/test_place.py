@@ -1,46 +1,36 @@
 #!/usr/bin/python3
-""" unit test for Review """
+""" Tests for class Place """
 import unittest
 from models.place import Place
-from datetime import datetime
 
 
-class PlaceTestCase(unittest.TestCase):
-    """ class for place test """
+class TestPlace(unittest.TestCase):
+    """Test cases for the Place class"""
 
-    def test_place(self):
-        """existince"""
-        pl = Place()
-        self.assertTrue(hasattr(pl, "id"))
-        self.assertTrue(hasattr(pl, "created_at"))
-        self.assertTrue(hasattr(pl, "updated_at"))
-        self.assertTrue(hasattr(pl, "city_id"))
-        self.assertTrue(hasattr(pl, "user_id"))
-        self.assertTrue(hasattr(pl, "name"))
-        self.assertTrue(hasattr(pl, "description"))
-        self.assertTrue(hasattr(pl, "number_rooms"))
-        self.assertTrue(hasattr(pl, "number_bathrooms"))
-        self.assertTrue(hasattr(pl, "max_guest"))
-        self.assertTrue(hasattr(pl, "price_by_night"))
-        self.assertTrue(hasattr(pl, "latitude"))
-        self.assertTrue(hasattr(pl, "longitude"))
-        self.assertTrue(hasattr(pl, "amenity_ids"))
+    def test_attributes(self):
+        """Test Place attributes"""
+        place = Place()
+        self.assertEqual(place.city_id, "")
+        self.assertEqual(place.user_id, "")
+        self.assertEqual(place.name, "")
+        self.assertEqual(place.description, "")
+        self.assertEqual(place.number_rooms, 0)
+        self.assertEqual(place.number_bathrooms, 0)
+        self.assertEqual(place.max_guest, 0)
+        self.assertEqual(place.price_by_night, 0)
+        self.assertEqual(place.latitude, 0.0)
+        self.assertEqual(place.longitude, 0.0)
+        self.assertEqual(place.amenity_ids, [])
 
-        """type test"""
-        self.assertIsInstance(pl.id, str)
-        self.assertIsInstance(pl.created_at, datetime)
-        self.assertIsInstance(pl.updated_at, datetime)
-        self.assertIsInstance(pl.city_id, str)
-        self.assertIsInstance(pl.user_id, str)
-        self.assertIsInstance(pl.name, str)
-        self.assertIsInstance(pl.description, str)
-        self.assertIsInstance(pl.number_rooms, int)
-        self.assertIsInstance(pl.number_bathrooms, int)
-        self.assertIsInstance(pl.max_guest, int)
-        self.assertIsInstance(pl.price_by_night, int)
-        self.assertIsInstance(pl.latitude, float)
-        self.assertIsInstance(pl.longitude, float)
-        self.assertIsInstance(pl.amenity_ids, list)
+    def test_str_representation(self):
+        """Test the __str__ method"""
+        place = Place()
+        str_rep = str(place)
+        self.assertIsInstance(str_rep, str)
+        self.assertIn("[Place]", str_rep)
+        self.assertIn("'id':", str_rep)
+        self.assertIn("'created_at':", str_rep)
+        self.assertIn("'updated_at':", str_rep)
 
 
 if __name__ == '__main__':

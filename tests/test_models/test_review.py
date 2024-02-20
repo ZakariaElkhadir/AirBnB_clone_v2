@@ -1,30 +1,29 @@
 #!/usr/bin/python3
-"""unit test for review"""
+""" Tests for class Review"""
 import unittest
 from models.review import Review
-from datetime import datetime
 
 
-class ReviewTestCase(unittest.TestCase):
-    """class for review test"""
-    def test_review(self):
-        """existince"""
-        rv = Review()
-        self.assertTrue(hasattr(rv, "id"))
-        self.assertTrue(hasattr(rv, "created_at"))
-        self.assertTrue(hasattr(rv, "updated_at"))
-        self.assertTrue(hasattr(rv, "place_id"))
-        self.assertTrue(hasattr(rv, "user_id"))
-        self.assertTrue(hasattr(rv, "text"))
+class TestReview(unittest.TestCase):
+    """Test cases for the Review class"""
 
-        """type test"""
-        self.assertIsInstance(rv.id, str)
-        self.assertIsInstance(rv.created_at, datetime)
-        self.assertIsInstance(rv.updated_at, datetime)
-        self.assertIsInstance(rv.place_id, str)
-        self.assertIsInstance(rv.user_id, str)
-        self.assertIsInstance(rv.text, str)
+    def test_attributes(self):
+        """Test Review attributes"""
+        review = Review()
+        self.assertEqual(review.place_id, "")
+        self.assertEqual(review.user_id, "")
+        self.assertEqual(review.text, "")
+
+    def test_str_representation(self):
+        """Test the __str__ method"""
+        review = Review()
+        str_rep = str(review)
+        self.assertIsInstance(str_rep, str)
+        self.assertIn("[Review]", str_rep)
+        self.assertIn("'id':", str_rep)
+        self.assertIn("'created_at':", str_rep)
+        self.assertIn("'updated_at':", str_rep)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

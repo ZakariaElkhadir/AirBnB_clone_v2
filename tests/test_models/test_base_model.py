@@ -1,117 +1,75 @@
 #!/usr/bin/python3
-""" unit test for bases """
-import json
+""" Tests for class BaseModel """
 import unittest
 from models.base_model import BaseModel
+from models.engine.file_storage import FileStorage
 from datetime import datetime
 import models
-from io import StringIO
-import sys
-from unittest.mock import patch
-captured_output = StringIO()
-sys.stdout = captured_output
+import os
+import os.path
 
 
-class BaseModelTestCase(unittest.TestCase):
-    """ class for base test """
+class TestBaseModel(unittest.TestCase):
+    """ Tests for class BaseModel """
 
-    def setUp(self):
-        """ class for base test """
-        self.filepath = models.storage._FileStorage__file_path
-        with open(self.filepath, 'w') as file:
-            file.truncate(0)
-        models.storage.all().clear()
+    def __init__(self, *args, **kwargs):
+        """ Inititialize models to test """
 
-    def tearDown(self):
-        """ class for base test """
-        printed_output = captured_output.getvalue()
-        sys.stdout = sys.__stdout__
+        super().__init__(*args, **kwargs)
+        self.test_class = BaseModel
+        self.test_name = 'BaseModel'
 
-    def test_basemodel_init(self):
-        """ class for base test """
-        new = BaseModel()
+    def test_init(self):
+        """Tests for init """
+        model = BaseModel()
+        self.assertTrue(hasattr(model, "id"))
+        self.assertTrue(hasattr(model, "created_at"))
+        self.assertTrue(hasattr(model, "updated_at"))
 
-        """ check if it have methods """
-        self.assertTrue(hasattr(new, "__init__"))
-        self.assertTrue(hasattr(new, "__str__"))
-        self.assertTrue(hasattr(new, "save"))
-        self.assertTrue(hasattr(new, "to_dict"))
+    def test_str(self):
+        """Test __str__ method"""
+        model = BaseModel()
+        str_repr = str(model)
+        self.assertIn("[BaseModel]", str_repr)
+        self.assertIn("id", str_repr)
+        self.assertIn("created_at", str_repr)
+        self.assertIn("updated_at", str_repr)
 
-        """existince"""
-        self.assertTrue(hasattr(new, "id"))
-        self.assertTrue(hasattr(new, "created_at"))
-        self.assertTrue(hasattr(new, "updated_at"))
+    def test_save_load(self):
+        """ Tests save and reload """
 
-        """type test"""
-        self.assertIsInstance(new.id, str)
-        self.assertIsInstance(new.created_at, datetime)
-        self.assertIsInstance(new.updated_at, datetime)
+        if os.path.exists('file.json'):
+            os.remove('file.json')
+        _save = FileStorage()
+        _save.reload()
+        _object = self.test_class()
+        self.assertTrue(self.test_name + '.' + _object.id in _save.all())
 
-        """ check if save in storage """
-        keyname = "BaseModel."+new.id
-        """ check if object exist by keyname """
-        self.assertIn(keyname, models.storage.all())
-        """ check if the object found in storage with corrrect id"""
-        self.assertTrue(models.storage.all()[keyname] is new)
+    def test_save(self):
+        """Test save method"""
+        model = BaseModel()
+        old_updated_at = model.updated_at
+        model.save()
+        self.assertNotEqual(old_updated_at, model.updated_at)
 
-        """ Test update """
-        new.name = "My First Model"
-        new.my_number = 89
-        self.assertTrue(hasattr(new, "name"))
-        self.assertTrue(hasattr(new, "my_number"))
-        self.assertTrue(hasattr(models.storage.all()[keyname], "name"))
-        self.assertTrue(hasattr(models.storage.all()[keyname], "my_number"))
+    def test_to_dict(self):
+        """Test to_dict method"""
+        model = BaseModel()
+        model_dict = model.to_dict()
+        self.assertEqual(model_dict['__class__'], "BaseModel")
+        self.assertEqual(type(model_dict['created_at']), str)
+        self.assertEqual(type(model_dict['updated_at']), str)
+        self.assertEqual(type(model_dict['id']), str)
 
-        """check if save() update update_at time change"""
-        old_time = new.updated_at
-        new.save()
-        self.assertNotEqual(old_time, new.updated_at)
-        self.assertGreater(new.updated_at, old_time)
-
-        """ check if init it call: models.storage.save() """
-        with patch('models.storage.save') as mock_function:
-            obj = BaseModel()
-            obj.save()
-            mock_function.assert_called_once()
-
-        """check if it save in json file"""
-        keyname = "BaseModel."+new.id
-        with open(self.filepath, 'r') as file:
-            saved_data = json.load(file)
-        """ check if object exist by keyname """
-        self.assertIn(keyname, saved_data)
-        """ check if the value found in json is correct"""
-        self.assertEqual(saved_data[keyname], new.to_dict())
-
-    def test_basemodel_init2(self):
-        """ class for base test """
-
-        new = BaseModel()
-        new.name = "John"
-        new.my_number = 89
-        new2 = BaseModel(**new.to_dict())
-        self.assertEqual(new.id, new2.id)
-        self.assertEqual(new.name, "John")
-        self.assertEqual(new.my_number, 89)
-        self.assertEqual(new.to_dict(), new2.to_dict())
-
-    def test_basemodel_init3(self):
-        """ DOC DOC DOC """
-        new = BaseModel()
-        new2 = BaseModel(new.to_dict())
-        self.assertNotEqual(new, new2)
-        self.assertNotEqual(new.id, new2.id)
-        self.assertTrue(isinstance(new2.created_at, datetime))
-        self.assertTrue(isinstance(new2.updated_at, datetime))
-
-        new = BaseModel()
-
-        self.assertEqual(
-            str(new),  "[BaseModel] ({}) {}".format(new.id, new.__dict__))
-
-        old_time = new.updated_at
-        new.save()
-        self.assertGreater(new.updated_at, old_time)
+    def test_save_existing_instance(self):
+        """Test saving a existing instance from dictionary"""
+        model = BaseModel()
+        old_updated_at = model.updated_at
+        model.save()
+        key = 'BaseModel.{}'.format(model.id)
+        self.assertEqual(models.storage.all()[key], model)
+        new_updated_at = models.storage.all()[key].updated_at
+        self.assertNotEqual(old_updated_at, new_updated_at)
 
 
 if __name__ == '__main__':

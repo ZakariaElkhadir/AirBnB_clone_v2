@@ -1,78 +1,57 @@
 #!/usr/bin/python3
-"""class model"""
+"""
+serializes instances to a JSON file and deserializes JSON file to instances
+"""
 import json
-import os.path
 from models.base_model import BaseModel
+from models.user import User
+from models.amenity import Amenity
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
 
 
 class FileStorage:
-    """_summary_
-
-    Returns:
-        _type_: _description_
-    """
+    """FileStorage class"""
     __file_path = "file.json"
     __objects = {}
 
-
-    def all(self, cls=None):
-        """Returns a dictionary of models currently in storage"""
-        if cls is not None:
-            objs = {}
-            for key, value in FileStorage.__objects.items():
-                if eval(key.split('.')[0]) == cls:
-                    objs[key] = value
-            return objs
-        return FileStorage.__objects
+    def all(self):
+        """returns the dictionary of objects"""
+        return self.__objects
 
     def new(self, obj):
-        """new: sets in __object the obj with key class_name id"""
-        id = obj.to_dict()["id"]
-        class_name = obj.to_dict()["__class__"]
-        key_name = class_name + "." + id
-        FileStorage.__objects[key_name] = obj
+        """sets in __objects the obj with key"""
+        if obj:
+            key = "{}.{}".format(type(obj).__name__, obj.id)
+            self.__objects[key] = obj
 
     def save(self):
-        """save - serializes __objects to the JSON file"""
-        path = FileStorage.__file_path
-        data = dict(FileStorage.__objects)
-        for key, value in data.items():
-            data[key] = value.to_dict()
-        with open(path, 'w') as file:
-            json.dump(data, file)
+        """Serializes __objects to the JSON file"""
+        dataJson = {}
+        for key, value in self.__objects.items():
+            dataJson[key] = value.to_dict()
+
+        with open(self.__file_path, 'w') as file:
+            json.dump(dataJson, file)
 
     def reload(self):
-        """reload method"""
-        filepath = FileStorage.__file_path
-        data = FileStorage.__objects
-        if os.path.exists(filepath):
-            try:
-                with open(filepath) as file:
-                    for key, value in json.load(file).items():
-                        if "BaseModel" in key:
-                            data[key] = BaseModel(**value)
-                        if "User" in key:
-                            data[key] = User(**value)
-                        if "Place" in key:
-                            data[key] = Place(**value)
-                        if "State" in key:
-                            data[key] = State(**value)
-                        if "City" in key:
-                            data[key] = City(**value)
-                        if "Amenity" in key:
-                            data[key] = Amenity(**value)
-                        if "Review" in key:
-                            data[key] = Review(**value)
-            except Exception:
-                pass
-    
-    def delete(self, obj=None):
-        """
-        delete an object of the class
-        """
-        if obj is not None:
-            key = "{}.{}".format(obj.__class__.__name__, obj.id)
-            if key in FileStorage.__objects:
-                del FileStorage.__objects[key]
-                self.save()
+        """Deserializes the JSON file to __objects if it exists"""
+        try:
+            with open(self.__file_path, 'r') as file:
+                data = json.load(file)
 
+                for key, obj_data in data.items():
+                    class_name = obj_data.pop('__class__')
+                    obj_class = globals().get(class_name)
+                    if obj_class is not None:
+                        obj_instance = obj_class(**obj_data)
+                        FileStorage.__objects[key] = obj_instance
+                    else:
+                        print(
+                            "Warning: Class '{}' not found, skipping object."
+                            .format(class_name))
+
+        except FileNotFoundError:
+            pass

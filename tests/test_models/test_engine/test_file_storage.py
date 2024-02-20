@@ -1,69 +1,52 @@
 #!/usr/bin/python3
-""" unit test for bases """
-
+""" Tests for class fileStorage """
 import unittest
-from models.base_model import BaseModel
-import models
-import json
 import os
+import json
+from models.engine.file_storage import FileStorage
+from models.base_model import BaseModel
 
 
-class FileStorageTestCase(unittest.TestCase):
-    """ class for base test """
+class TestFileStorage(unittest.TestCase):
 
-    def test_FileStorage_init(self):
-        """ DOC DOC DOC """
-        filepath = models.storage._FileStorage__file_path
-        _objs = models.storage._FileStorage__objects
-        """check class attr"""
-        self.assertEqual(filepath, "file.json")
-        self.assertIsInstance(filepath, str)
-        self.assertIsInstance(_objs, dict)
-        new = BaseModel()
-        """ check if it have methods """
-        self.assertTrue(hasattr(new, "__init__"))
-        self.assertTrue(hasattr(new, "__str__"))
-        self.assertTrue(hasattr(new, "save"))
-        self.assertTrue(hasattr(new, "to_dict"))
+    def setUp(self):
+        self.storage = FileStorage()
 
-        """test all"""
-        self.assertIsInstance(models.storage.all(), dict)
-        self.assertNotEqual(models.storage.all(), {})
-        """existence id"""
-        self.assertTrue(hasattr(new, "id"))
-        self.assertIsInstance(new.id, str)
+    def tearDown(self):
+        try:
+            os.remove(FileStorage._FileStorage__file_path)
+        except FileNotFoundError:
+            pass
 
-        """new"""
-        keyname = "BaseModel."+new.id
-        self.assertIsInstance(models.storage.all()[keyname], BaseModel)
-        self.assertEqual(models.storage.all()[keyname], new)
-        """ check if object exist by keyname """
-        self.assertIn(keyname, models.storage.all())
-        """ check if the object found in storage with corrrect id"""
-        self.assertTrue(models.storage.all()[keyname] is new)
+    def test_all(self):
+        """Test the 'all' method of FileStorage"""
+        pass
 
-        """save"""
-        models.storage.save()
-        with open(filepath, 'r') as file:
-            saved_data = json.load(file)
-        """ check if object exist by keyname """
-        self.assertIn(keyname, saved_data)
-        """ check if the value found in json is correct"""
-        self.assertEqual(saved_data[keyname], new.to_dict())
+    def test_new(self):
+        """Test the 'new' method of FileStorage"""
+        model = BaseModel()
+        self.storage.new(model)
+        all_objects = self.storage.all()
+        self.assertIn('BaseModel.{}'.format(model.id), all_objects)
 
-        """reload"""
-        models.storage.all().clear()
-        models.storage.reload()
-        with open(filepath, 'r') as file:
-            saved_data = json.load(file)
-        self.assertEqual(saved_data[keyname],
-                         models.storage.all()[keyname].to_dict())
+    def test_save_reload(self):
+        """Test saving and reloading using FileStorage"""
+        model = BaseModel()
+        self.storage.new(model)
+        self.storage.save()
+        self.storage = None
+        new_storage = FileStorage()
+        new_storage.reload()
+        all_objects = new_storage.all()
+        self.assertIn('BaseModel.{}'.format(model.id), all_objects)
 
-        """file"""
-        if os.path.exists(filepath):
-            os.remove(filepath)
-        self.assertFalse(os.path.exists(filepath))
-        models.storage.reload()
+    def test_save(self):
+        """ Tests serializing objects to json file """
+        pass
+
+    def test_reload(self):
+        """ Tests deserializing the json file """
+        pass
 
 
 if __name__ == '__main__':

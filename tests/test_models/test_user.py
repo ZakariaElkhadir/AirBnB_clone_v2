@@ -1,32 +1,38 @@
 #!/usr/bin/python3
-"""unit test for user"""
+""" Tests for class User """
 import unittest
 from models.user import User
-from datetime import datetime
+from tests.test_models.test_base_model import TestBaseModel
 
 
-class UserTestCase(unittest.TestCase):
-    """class for user test"""
-    def test_user(self):
-        """existince"""
-        pl = User()
-        self.assertTrue(hasattr(pl, "id"))
-        self.assertTrue(hasattr(pl, "created_at"))
-        self.assertTrue(hasattr(pl, "updated_at"))
-        self.assertTrue(hasattr(pl, "email"))
-        self.assertTrue(hasattr(pl, "password"))
-        self.assertTrue(hasattr(pl, "first_name"))
-        self.assertTrue(hasattr(pl, "last_name"))
+class TestUser(TestBaseModel):
+    """ Tests for class User """
 
-        """type test"""
-        self.assertIsInstance(pl.id, str)
-        self.assertIsInstance(pl.created_at, datetime)
-        self.assertIsInstance(pl.updated_at, datetime)
-        self.assertIsInstance(pl.email, str)
-        self.assertIsInstance(pl.password, str)
-        self.assertIsInstance(pl.first_name, str)
-        self.assertIsInstance(pl.last_name, str)
+    def __init__(self, *args, **kwargs):
+        """ Inititialize models to test """
+
+        super().__init__(*args, **kwargs)
+        self.test_class = User
+        self.test_name = 'User'
+
+    def test_attributes(self):
+        """Test User attributes"""
+        user = User()
+        self.assertEqual(user.email, "")
+        self.assertEqual(user.password, "")
+        self.assertEqual(user.first_name, "")
+        self.assertEqual(user.last_name, "")
+
+    def test_str_representation(self):
+        """Test the __str__ method"""
+        user = User()
+        str_rep = str(user)
+        self.assertIsInstance(str_rep, str)
+        self.assertIn("[User]", str_rep)
+        self.assertIn("'id':", str_rep)
+        self.assertIn("'created_at':", str_rep)
+        self.assertIn("'updated_at':", str_rep)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

@@ -1,28 +1,27 @@
 #!/usr/bin/python3
-""" unit test for City """
+""" Tests for class City """
 import unittest
 from models.city import City
-from datetime import datetime
 
 
-class CityTestCase(unittest.TestCase):
-    """ class for city test """
+class TestCity(unittest.TestCase):
+    """Test cases for the City class"""
 
-    def test_city(self):
-        """existince"""
-        ci = City()
-        self.assertTrue(hasattr(ci, "id"))
-        self.assertTrue(hasattr(ci, "created_at"))
-        self.assertTrue(hasattr(ci, "updated_at"))
-        self.assertTrue(hasattr(ci, "state_id"))
-        self.assertTrue(hasattr(ci, "name"))
+    def test_attributes(self):
+        """Test City attributes"""
+        city = City()
+        self.assertEqual(city.state_id, "")
+        self.assertEqual(city.name, "")
 
-        """type test"""
-        self.assertIsInstance(ci.id, str)
-        self.assertIsInstance(ci.created_at, datetime)
-        self.assertIsInstance(ci.updated_at, datetime)
-        self.assertIsInstance(ci.state_id, str)
-        self.assertIsInstance(ci.name, str)
+    def test_str_representation(self):
+        """Test the __str__ method"""
+        city = City()
+        str_rep = str(city)
+        self.assertIsInstance(str_rep, str)
+        self.assertIn("[City]", str_rep)
+        self.assertIn("'id':", str_rep)
+        self.assertIn("'created_at':", str_rep)
+        self.assertIn("'updated_at':", str_rep)
 
 
 if __name__ == '__main__':
