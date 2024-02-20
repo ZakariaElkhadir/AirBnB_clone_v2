@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""amenity Class"""
+""" amenity Class """
 
 from models.base_model import BaseModel
 
