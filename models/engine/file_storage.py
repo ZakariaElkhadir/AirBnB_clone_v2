@@ -63,3 +63,6 @@ class FileStorage:
                             data[key] = Review(**value)
             except Exception:
                 pass
+    
+    def delete(self, obj=None):
+        pass

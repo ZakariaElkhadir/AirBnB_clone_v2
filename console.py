@@ -37,18 +37,39 @@ class HBNBCommand(cmd.Cmd):
         """do nothing when empty line"""
         pass
 
-    def do_create(self, type_model):
+    def do_create(self, arg):
         """ Creates an instance according to a given class """
-        if not type_model:
+        try:
+            class_name = arg.split(" ")
+        except IndexError:
+            pass
+
+        if not arg:
             print("** class name missing **")
-        elif type_model not in HBNBCommand.cal:
+        elif arg not in HBNBCommand.cal:
             print("** class doesn't exist **")
         else:
             dct = {'BaseModel': BaseModel, 'User': User, 'Place': Place,
                    'City': City, 'Amenity': Amenity, 'State': State,
                    'Review': Review}
+        
+        all_list = arg.split(" ")
+        new_instance = eval(class_name)()
+        for i in range(1, len(all_list)):
+            key, value = tuple(all_list[i].split("="))
+            if value.startswith('"'):
+                value = value.strip('"').replace("_", " ")
+            else:
+                try:
+                    value = eval(value)
+                except Exception:
+                    print(f"couldnt evaluate {value}")
+                    pass
+            if hasattr(new_instance, key):
+                setattr(new_instance ,key ,value)
 
-            my_model = dct[type_model]()
+
+            my_model = dct[new_instance]
             print(my_model.id)
             my_model.save()
 
