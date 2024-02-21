@@ -1,6 +1,26 @@
 #!/usr/bin/python3
 
-def do_create(self, arg):
+import sys
+from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
+
+""" dict to tests """
+HBNBCommand = {
+    'BaseModel': BaseModel,
+    'User': User,
+    'Place': Place,
+    'City': City,
+    'Amenity': Amenity,
+    'State': State,
+    'Review': Review
+}
+
+def do_create(arg):
     """Creates a new instance with given parameters"""
     try:
         if not arg:
@@ -10,7 +30,7 @@ def do_create(self, arg):
         args = arg.split(" ")
         class_name = args[0]
         
-        if class_name not in HBNBCommand.cal:
+        if class_name not in HBNBCommand:
             print("** class doesn't exist **")
             return
         
@@ -31,10 +51,14 @@ def do_create(self, arg):
             params[key.replace('_', ' ')] = value
         
         """ Create an instance of the specified class with the provided parameters """
-        obj = HBNBCommand.cal[class_name](**params)
+        obj = HBNBCommand[class_name](**params)
         print("Instance created with ID:", obj.id)
         obj.save()
         
     except Exception as e:
         print("Error:", e)
+
+""" Read commands from standard input"""
+for line in sys.stdin:
+    do_create(line.strip())
 
