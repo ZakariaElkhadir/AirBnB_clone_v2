@@ -14,7 +14,10 @@ from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
-    """Defines the HbnBnB command interpreter."""
+    """_summary_
+    Returns:
+        _type_: _description_
+    """
 
     prompt = "(hbnb) "
     __classes = {
@@ -27,23 +30,22 @@ class HBNBCommand(cmd.Cmd):
         "Review"
     }
 
+    def do_quit(self, arg):
+        """ Quit command to exit the command interpreter """
+        return True
+
+    def do_EOF(self, arg):
+        """ EOF command to exit the command interpreter """
+        print()
+        return True
+
     def emptyline(self):
-        """Ignore empty spaces."""
+        """do nothing when empty line"""
         pass
-
-    def do_quit(self, line):
-        """Quit command to exit the program."""
-        return True
-
-    def do_EOF(self, line):
-        """EOF signal to exit """
-        print("")
-        return True
 
     def do_create(self, line):
         """Usage: create <class> <key 1>=<value 2> <key 2>=<value 2> ...
-        Create a new class instance with given keys/values and print its id.
-        """
+        Create an instance accordig to a given class """
         try:
             if not line:
                 raise SyntaxError()
