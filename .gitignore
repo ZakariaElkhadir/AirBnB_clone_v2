@@ -1,3 +1,6 @@
 __pycache__
-
-main_delete.py
+*.pyc
+*~
+*.json
+versions
+*main*.py

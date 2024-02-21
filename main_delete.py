@@ -3,8 +3,7 @@
 """
 from models.engine.file_storage import FileStorage
 from models.state import State
-  from models.user import User  # Add this line
-    from models.engine.file_storage import FileStorage
+ 
 
 fs = FileStorage()
 
