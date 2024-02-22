@@ -4,7 +4,9 @@
 from uuid import uuid4
 from datetime import datetime
 import models
-
+from models import storage
+from sqlalchemy import Column, Integer, String, declarative_base
+Base = declarative_base()
 
 class BaseModel:
     """
@@ -12,6 +14,9 @@ class BaseModel:
     common attributes/methods for other
     classes
     """
+    id = Column(String(60), primary_key=True, unique=True, nullable=False)
+    created_at = Column(datetime, default=datetime.utcnow(), nullable=False)
+    updated_at = Column(datetime, nullable=False, default=datetime.utcnow())
 
     def __init__(self, *args, **kwargs) -> None:
         """initialization of BaseModel class"""
@@ -27,7 +32,7 @@ class BaseModel:
                 elif key != "__class__":
                     self.__dict__[key] = value
         else:
-            models.storage.new(self)
+            models.storage.new()
 
     def __str__(self) -> str:
         """Returns the string representation of an instance"""
@@ -36,6 +41,7 @@ class BaseModel:
 
     def save(self) -> None:
         """set updated_at to now datetime"""
+        models.storage.new(self)
         self.updated_at = datetime.now()
         models.storage.save()
 
@@ -47,4 +53,10 @@ class BaseModel:
             ToDict["created_at"] = ToDict["created_at"].isoformat()
         if not isinstance(ToDict["updated_at"], str):
             ToDict["updated_at"] = ToDict["updated_at"].isoformat()
+        
+        if "_sa_instance_state" in ToDict:
+            del ToDict["_sa_instance_state"]
         return ToDict
+
+    def delete(self):
+        storage.delete(self)
