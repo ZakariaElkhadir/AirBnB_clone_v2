@@ -5,3 +5,5 @@ __pycache__
 versions
 *main*.py
 test_params_create
+*.xml
+*.iml
