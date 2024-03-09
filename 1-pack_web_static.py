@@ -8,12 +8,12 @@ from datetime import datetime
 
 def do_pack():
     # Define the archive name with the current timestamp
-    archive_name = 'web_static_{}.tgz'.format(
-        datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
-    # Execute the tar command
-    local('tar -cvzf {} web_static'.format(archive_name))
-    # Return the archive path if the archive was created
-    if os.path.exists(archive_name):
+    try:
+        archive_name = 'web_static_{}.tgz'.format(
+            datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
+        # Execute the tar command
+        local('tar -cvzf {} web_static'.format(archive_name))
+        # Return the archive path if the archive was created
         return archive_name
-    else:
+    except Exception as e:
         return None
