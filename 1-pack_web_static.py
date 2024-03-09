@@ -11,9 +11,9 @@ def do_pack():
     try:
         archive_name = 'web_static_{}.tgz'.format(
             datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
-        # Execute the tar command
+
         local('tar -cvzf {} web_static'.format(archive_name))
-        # Return the archive path if the archive was created
+
         return archive_name
     except Exception as e:
         return None
