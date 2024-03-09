@@ -18,16 +18,13 @@ def do_pack():
 
         local('mkdir -p versions')
 
-
-        name = "web_static_{}".format(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
-
+        name = "web_static_{}".format(
+            datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
 
         local("tar -cvzf versions/{}.tgz {}".format(name, "web_static/"))
-
 
         return "versions/{}".format(name)
     except Exception as e:
 
         print(f"An error occurred: {e}")
         return None
-
