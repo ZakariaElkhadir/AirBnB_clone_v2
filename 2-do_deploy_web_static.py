@@ -7,19 +7,27 @@ import os
 from fabric.api import *
 from datetime import datetime
 
+
 def do_pack():
     """
     Generates a .tgz archive from the contents of the web_static folder.
     Returns the archive path if successful, otherwise returns None.
     """
     try:
+
         local('mkdir -p versions')
-        name = "web_static_{}".format(datetime.now().strftime("%Y%m%d%H%M%S"))
-        local("tar -cvzf versions/{}.tgz web_static/".format(name))
+
+        name = "web_static_{}".format(
+            datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+
+        local("tar -cvzf versions/{}.tgz {}".format(name, "web_static/"))
+
         return "versions/{}".format(name)
     except Exception as e:
+
         print(f"An error occurred: {e}")
         return None
+
 
 def do_deploy(archive_path):
     """
@@ -41,7 +49,8 @@ def do_deploy(archive_path):
         run("tar -xzf /tmp/{} -C {}{}/".format(
             fn_with_extension, deploy_path, fn_no_extension))
         run(f"rm /tmp/{fn_with_extension}")
-        run("mv {0}{1}/web_static/* {0}{1}/".format(deploy_path, fn_no_extension))
+        run("mv {0}{1}/web_static/* {0}{1}/".format(
+            deploy_path, fn_no_extension))
         run(f"rm -rf {deploy_path}{fn_no_extension}/web_static")
         run("rm -rf /data/web_static/current")
         run(f"ln -s {deploy_path}{fn_no_extension}/ /data/web_static/current")
