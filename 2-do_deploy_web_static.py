@@ -1,61 +1,50 @@
 #!/usr/bin/python3
+""" module doc
 """
-Fabric script that distributes
- an archive to your web servers.
-"""
-import os
-from fabric.api import *
+from fabric.api import task, local, env, put, run
 from datetime import datetime
+import os
+
+env.hosts = ['18.207.1.87', '52.206.189.175']
 
 
+@task
 def do_pack():
+    """ method doc
+        sudo fab -f 1-pack_web_static.py do_pack
     """
-    Generates a .tgz archive from the contents of the web_static folder.
-    Returns the archive path if successful, otherwise returns None.
-    """
-    try:
-
-        local('mkdir -p versions')
-
-        name = "web_static_{}".format(
-            datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
-
-        local("tar -cvzf versions/{}.tgz {}".format(name, "web_static/"))
-
-        return "versions/{}".format(name)
-    except Exception as e:
-
-        print(f"An error occurred: {e}")
-        return None
+    formatted_dt = datetime.now().strftime('%Y%m%d%H%M%S')
+    mkdir = "mkdir -p versions"
+    path = "versions/web_static_{}.tgz".format(formatted_dt)
+    print("Packing web_static to {}".format(path))
+    if local("{} && tar -cvzf {} web_static".format(mkdir, path)).succeeded:
+        return path
+    return None
 
 
+@task
 def do_deploy(archive_path):
+    """ method doc
+        fab -f 2-do_deploy_web_static.py do_deploy:
+        archive_path=versions/web_static_20231004201306.tgz
+        -i ~/.ssh/id_rsa -u ubuntu
     """
-    Distributes an archive to your web servers.
-    """
-    if not os.path.exists(archive_path):
-        return False
-
     try:
         if not os.path.exists(archive_path):
             return False
-        fn_with_extension = os.path.basename(archive_path)
-        fn_no_extension = os.path.splitext(fn_with_extension)
-        deploy_path = "/data/web_static/releases/"
-
+        fn_with_ext = os.path.basename(archive_path)
+        fn_no_ext, ext = os.path.splitext(fn_with_ext)
+        dpath = "/data/web_static/releases/"
         put(archive_path, "/tmp/")
-        run(f"rm -p {deploy_path}{fn_no_extension}/")
-        run(f"mkdir -p {deploy_path}{fn_no_extension}/")
-        run("tar -xzf /tmp/{} -C {}{}/".format(
-            fn_with_extension, deploy_path, fn_no_extension))
-        run(f"rm /tmp/{fn_with_extension}")
-        run("mv {0}{1}/web_static/* {0}{1}/".format(
-            deploy_path, fn_no_extension))
-        run(f"rm -rf {deploy_path}{fn_no_extension}/web_static")
+        run("rm -rf {}{}/".format(dpath, fn_no_ext))
+        run("mkdir -p {}{}/".format(dpath, fn_no_ext))
+        run("tar -xzf /tmp/{} -C {}{}/".format(fn_with_ext, dpath, fn_no_ext))
+        run("rm /tmp/{}".format(fn_with_ext))
+        run("mv {0}{1}/web_static/* {0}{1}/".format(dpath, fn_no_ext))
+        run("rm -rf {}{}/web_static".format(dpath, fn_no_ext))
         run("rm -rf /data/web_static/current")
-        run(f"ln -s {deploy_path}{fn_no_extension}/ /data/web_static/current")
-        print("Deployment complete.")
+        run("ln -s {}{}/ /data/web_static/current".format(dpath, fn_no_ext))
+        print("New version deployed!")
         return True
-    except Exception as e:
-        print(f"An error occurred during deployment: {e}")
+    except Exception:
         return False
