@@ -6,12 +6,11 @@ app = Flask(__name__)
 
 
 @app.route("/", strict_slashes=False)
+@app.route("/hbnb", strict_slashes=False)
 def hello():
     """print output"""
     return "Hello HBNB!"
 
-
-@app.route("/hbnb", strict_slashes=False)
 def hbnb():
     """print output"""
     return "HBNB"
