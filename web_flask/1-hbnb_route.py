@@ -6,11 +6,12 @@ app = Flask(__name__)
 
 
 @app.route("/", strict_slashes=False)
-@app.route("/hbnb", strict_slashes=False)
 def hello():
     """print output"""
     return "Hello HBNB!"
 
+
+@app.route("/hbnb", strict_slashes=False)
 def hbnb():
     """print output"""
     return "HBNB"
@@ -18,4 +19,4 @@ def hbnb():
 
 if __name__ == "__main__":
     """set port and host"""
-    app.run(host='8.8.8.8', port=5000)
+    app.run(host='0.0.0.0', port=5000)
