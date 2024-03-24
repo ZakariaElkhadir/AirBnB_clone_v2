@@ -21,7 +21,7 @@ def hbnb():
 
 @app.route("/c/<text>", strict_slashes=False)
 def c_route(text):
-    """print output"""
+    """the space will replaced with underscore"""
     return "C {}".format(text.replace("_", " "))
 
 
