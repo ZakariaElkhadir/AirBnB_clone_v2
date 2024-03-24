@@ -1,39 +1,49 @@
 #!/usr/bin/python3
-"""flask module"""
+""" doc flask"""
 from flask import Flask, render_template
 
 app = Flask(__name__)
 
-@app.route("/", strict_slashes=False)
+
+@app.route("/",  strict_slashes=False)
 def hello():
-    """print output"""
+    """start flask"""
     return "Hello HBNB!"
 
-@app.route("/hbnb", strict_slashes=False)
+
+@app.route("/hbnb",  strict_slashes=False)
 def hbnb():
-    """print output"""
+    """start flask"""
     return "HBNB"
 
-@app.route("/c/<text>", strict_slashes=False)
-def c_route(text):
-    """the space will replaced with underscore"""
-    return "C {}".format(text.replace("_", " "))
 
-@app.route("/python/", defaults={'text': 'is cool'}, strict_slashes=False)
-@app.route("python/<text>", strict_slashes=False)
-def python_route(text):
-    """print output"""
-    return "Python {}".format(text.replace("_", " "))
+@app.route("/c/<text>",  strict_slashes=False)
+def printC(text):
+    """display slag"""
+    slag = text.replace("_", " ")
+    return "C {}".format(slag)
 
-@app.route("/number/<int:n>", strict_slashes=False)
-def number_route(n):
-    """print output"""
+
+@app.route('/python/', defaults={'text': 'is cool'}, strict_slashes=False)
+@app.route("/python/<text>",  strict_slashes=False)
+def printPython(text):
+    """display slag"""
+    slag = text.replace("_", " ")
+    return "Python {}".format(slag)
+
+
+@app.route("/number/<int:n>",  strict_slashes=False)
+def printNumber(n):
+    """display slag number"""
     return "{} is a number".format(n)
 
-@app.route("/number_template/<int:n>", strict_slashes=False)
+
+@app.route('/number_template/<int:n>', strict_slashes=False)
 def number_template(n):
-    """print output"""
-    return render_template('5-number.html', number=n)
+    """display slag number"""
+    if isinstance(n, int):
+        return render_template('5-number.html', number=n)
+
 
 @app.route('/number_odd_or_even/<int:n>', strict_slashes=False)
 def number_odd_or_even(n):
@@ -45,5 +55,4 @@ def number_odd_or_even(n):
 
 
 if __name__ == "__main__":
-    """set port and host"""
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host="0.0.0.0", port=5000)
