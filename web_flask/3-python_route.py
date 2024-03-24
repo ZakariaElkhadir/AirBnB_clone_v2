@@ -15,19 +15,19 @@ def hello():
     return "Hello HBNB!"
 
 
-@app.route('/hbnb', strict_slashes=False)
+@app.route("/hbnb", strict_slashes=False)
 def hbnb():
     """print output"""
     return "HBNB"
 
 
-@app.route('/c/<text>', strict_slashes=False)
+@app.route("/c/<text>", strict_slashes=False)
 def c_route(text):
     """print output"""
     return "C {}".format(text.replace('_', ' '))
 
 
-@app.route('/python/<text>', strict_slashes=False)
+@app.route("/python/<text>", strict_slashes=False)
 def python_rooute(text="is cool"):
     """print output"""
     return "Python {}".format(text.replace('_', ''))
