@@ -9,18 +9,22 @@ from models.city import City
 
 app = Flask(__name__)
 
+
 @app.route('/states', strict_slashes=False)
 def states():
     """Displays a HTML page with a list of states"""
     states = storage.all(State)
     return render_template('9-states.html', states=states)
 
+
 @app.route('/states/<id>', strict_slashes=False)
 def states_id(id):
     """displays a HTML page with a list of states"""
     states = storage.all(State)
     cities = storage.all(City)
-    return render_template('9-states.html', states=states, cities=cities, id=id)
+    return render_template(
+        '9-states.html', states=states, cities=cities, id=id)
+
 
 @app.teardown_appcontext
 def closer(exception):
